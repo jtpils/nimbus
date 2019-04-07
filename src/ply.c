@@ -75,6 +75,14 @@ struct ply* ply_init()
 
 void ply_free(struct ply* pp)
 {
+    for (int i = 0; i < pp->num_elements; ++i) {
+        struct element* e = pp->elements + i;
+        free(e->name);
+        for (int j = 0; j < e->num_properties; ++j) {
+            struct property* p = e->properties + j;
+            free(p->name);
+        }
+    }
     free(pp);
 }
 
@@ -85,7 +93,7 @@ void ply_init_io(struct ply* pp, FILE* fp)
 }
 
 
-static struct element* ply_read_header_element(struct ply* pp)
+static struct element* _ply_read_header_element(struct ply* pp)
 {
     char* word = NULL;
     struct element* e = pp->elements + pp->num_elements;
@@ -99,7 +107,7 @@ static struct element* ply_read_header_element(struct ply* pp)
 }
 
 
-static struct property* ply_read_header_property(struct ply* pp)
+static struct property* _ply_read_header_property(struct ply* pp)
 {
     char* word = NULL;
     struct element* e  = pp->elements + pp->num_elements - 1;
@@ -114,6 +122,7 @@ static struct property* ply_read_header_property(struct ply* pp)
     }
     word = strtok(NULL, " \n");
     p->name = strdup(word);
+    e->num_properties++;
     return p;
 }
 
@@ -129,13 +138,11 @@ void ply_read_header(struct ply* pp)
             word = strtok(NULL, " \n");
             pp->format = string_to_enum(word, formats);
         } else if (!strcmp(word, "element")) {
-            struct element* e = ply_read_header_element(pp);
+            struct element* e = _ply_read_header_element(pp);
             if (!e) fprintf(stderr, "[ply] Invalid format\n");
-            printf("%s %d\n", e->name, e->count);
         } else if (!strcmp(word, "property")) {
-            struct property* p = ply_read_header_property(pp);
+            struct property* p = _ply_read_header_property(pp);
             if (!p) fprintf(stderr, "[ply] Invalid format\n");
-            printf("%s %s\n", p->name, types[p->type]);
         } else if (!strcmp(word, "comment")) {
             continue;
         } else if (!strcmp(word, "end_header")) {
@@ -155,7 +162,11 @@ bool ply_check_sig(const char* sig, int n)
 }
 
 
-int ply_element_count(struct ply* ply, const char* name)
+int ply_element_count(struct ply* pp, const char* name)
 {
+    for (int i = 0; i < pp->num_elements; ++i) {
+        struct element* e = pp->elements + i;
+        if (!strcmp(e->name, name)) return e->count;
+    }
     return 0;
 }
