@@ -4,8 +4,8 @@
 typedef struct { double x, y, z; } vec3;
 typedef struct { unsigned char r, g, b; } rgb8;
 
-struct cloud {
-    vec3* position;
+struct pcd {
+    vec3* pos;
     vec3* normal;
     rgb8* color;
     int size;
@@ -15,5 +15,7 @@ struct cloud {
     unsigned int ebo;
 };
 
-void cloud_load(struct cloud* pcd, const char* fname);
-void cloud_save(struct cloud* pcd, const char* fname);
+void pcd_load(struct pcd* pcd, const char* fname);
+void pcd_save(struct pcd* pcd, const char* fname);
+void pcd_alloc(struct pcd* pcd, int size);
+void pcd_free(struct pcd* pcd);

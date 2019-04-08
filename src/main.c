@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #define GL_SILENCE_DEPRECATION
 #include "app.h"
-#include "cloud.h"
+#include "pcd.h"
 
 
-struct cloud pcd;
+struct pcd pcd = {0};
 
 
 static void init(void)
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     }
 
     const char* fname = argv[1];
-    cloud_load(&pcd, fname);
+    pcd_load(&pcd, fname);
 
     struct app app = {
         .init_cb = init,

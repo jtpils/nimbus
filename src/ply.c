@@ -1,30 +1,33 @@
 #include "ply.h"
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_ELEMENT  16
-#define MAX_PROPERTY 32
+#define MAX_ELEMENTS   16
+#define MAX_PROPERTIES 32
 
 
 struct property {
     char* name;
     int type;
     int itype;
-    int vtype;
+    int vtype; /* value type */
 };
 
 struct element {
     char* name;
     int count;
     int num_properties;
-    struct property properties[MAX_PROPERTY];
+    struct property properties[MAX_PROPERTIES];
+    void* data;
+    ply_read_cb* read_cb;
 };
 
 struct ply {
     FILE* fp;
     int format;
     int num_elements;
-    struct element elements[MAX_ELEMENT];
+    struct element elements[MAX_ELEMENTS];
 };
 
 
@@ -93,7 +96,7 @@ void ply_init_io(struct ply* pp, FILE* fp)
 }
 
 
-static struct element* _ply_read_header_element(struct ply* pp)
+static struct element* ply_read_header_element(struct ply* pp)
 {
     char* word = NULL;
     struct element* e = pp->elements + pp->num_elements;
@@ -107,7 +110,7 @@ static struct element* _ply_read_header_element(struct ply* pp)
 }
 
 
-static struct property* _ply_read_header_property(struct ply* pp)
+static struct property* ply_read_header_property(struct ply* pp)
 {
     char* word = NULL;
     struct element* e  = pp->elements + pp->num_elements - 1;
@@ -138,10 +141,10 @@ void ply_read_header(struct ply* pp)
             word = strtok(NULL, " \n");
             pp->format = string_to_enum(word, formats);
         } else if (!strcmp(word, "element")) {
-            struct element* e = _ply_read_header_element(pp);
+            struct element* e = ply_read_header_element(pp);
             if (!e) fprintf(stderr, "[ply] Invalid format\n");
         } else if (!strcmp(word, "property")) {
-            struct property* p = _ply_read_header_property(pp);
+            struct property* p = ply_read_header_property(pp);
             if (!p) fprintf(stderr, "[ply] Invalid format\n");
         } else if (!strcmp(word, "comment")) {
             continue;
@@ -166,7 +169,55 @@ int ply_element_count(struct ply* pp, const char* name)
 {
     for (int i = 0; i < pp->num_elements; ++i) {
         struct element* e = pp->elements + i;
-        if (!strcmp(e->name, name)) return e->count;
+        if (strcmp(e->name, name)) continue;
+        return e->count;
     }
     return 0;
+}
+
+
+void ply_set_read_cb(struct ply* pp, const char* name, ply_read_cb read_cb, void* data)
+{
+    for (int i = 0; i < pp->num_elements; ++i) {
+        struct element* e = pp->elements + i;
+        if (strcmp(e->name, name)) continue;
+        e->data = data;
+        e->read_cb = read_cb;
+    }
+}
+
+
+static double ply_read_property(struct ply* pp, struct element* e, struct property* p)
+{
+    double v = NAN;
+    switch (pp->format) {
+        case PLY_ASCII:
+            fscanf(pp->fp, "%lf", &v);
+            break;
+        case PLY_BIG_ENDIAN:
+        case PLY_LITTLE_ENDIAN:
+            break;
+    }
+    return v;
+}
+
+
+static void ply_read_element(struct ply* pp, struct element* e)
+{
+    for (int i = 0; i < e->count; ++i) {
+        for (int k = 0; k < e->num_properties; ++k) {
+            struct property* p = e->properties + k;
+            double v = ply_read_property(pp, e, p);
+            e->read_cb(v, p->name, i, e->data);
+        }
+    }
+}
+
+
+void ply_read(struct ply* pp)
+{
+    for (int i = 0; i < pp->num_elements; ++i) {
+        struct element* e = pp->elements + i;
+        if (e->read_cb) ply_read_element(pp, e);
+    }
 }

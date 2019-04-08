@@ -31,9 +31,13 @@ enum {
 
 struct ply;
 
+typedef void (ply_read_cb)(double, const char*, int, void*);
+
 struct ply* ply_init();
 void ply_free(struct ply* pp);
 void ply_init_io(struct ply* pp, FILE* fp);
 void ply_read_header(struct ply* pp);
+void ply_read(struct ply* pp);
+void ply_set_read_cb(struct ply* pp, const char* name, ply_read_cb* read_cb, void* data);
 bool ply_check_sig(const char* sig, int n);
 int  ply_element_count(struct ply* pp, const char* name);
