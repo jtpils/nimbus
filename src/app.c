@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-static void _app_init_glfw(struct app* app)
+static void app_init_glfw(struct app* app)
 {
     if (!glfwInit()) {
         fprintf(stderr, "[GLFW] initialisation failed\n");
@@ -18,16 +18,22 @@ static void _app_init_glfw(struct app* app)
 
     glfwMakeContextCurrent(app->hwnd);
     glfwSwapInterval(app->swap_interval);
+
+    if (gl3wInit()) {
+        fprintf(stderr, "[GL3W] initialisation failed\n");
+    }
+    printf("OpenGL: %s\n", glGetString(GL_VERSION));
+    printf("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
 
-static bool _app_should_close_glfw(struct app* app)
+static bool app_should_close_glfw(struct app* app)
 {
     return glfwWindowShouldClose(app->hwnd);
 }
 
 
-static void _app_flush_glfw(struct app* app)
+static void app_flush_glfw(struct app* app)
 {
     glfwPollEvents();
     glfwSwapBuffers(app->hwnd);
@@ -36,13 +42,14 @@ static void _app_flush_glfw(struct app* app)
 
 int app_run(struct app* app)
 {
-    _app_init_glfw(app);
+    app_init_glfw(app);
     if (app->init_cb) app->init_cb();
 
-    while (!_app_should_close_glfw(app)) {
+    while (!app_should_close_glfw(app)) {
         if (app->draw_cb) app->draw_cb();
-        _app_flush_glfw(app);
+        app_flush_glfw(app);
     };
 
+    if (app->cleanup_cb) app->cleanup_cb();
     return 0;
 }

@@ -2,14 +2,14 @@ CC = gcc
 
 UNAME = $(shell uname)
 
-INCLUDES =
+INCLUDES = -Iinclude
 DEFINES =
 CFLAGS = -O2 -Wall -Werror -pedantic -std=c99 $(INCLUDES) $(DEFINES)
 LDFLAGS =
 ifeq ($(UNAME),Darwin)
 LDLIBS = -lglfw -framework OpenGL
 else
-LDLIBS = -lglfw -lGL
+LDLIBS = -lglfw -lGL -ldl
 endif
 
 SOURCES := $(shell find src -name *.c)

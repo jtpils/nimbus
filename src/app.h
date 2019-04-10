@@ -1,6 +1,6 @@
 #pragma once
 #include <stdbool.h>
-#include <GLFW/glfw3.h>
+#include "glw.h"
 
 
 struct app {
@@ -14,7 +14,7 @@ struct app {
     int swap_interval;
     bool high_dpi;
     bool fullscreen;
-    const char* title;
+    char* title;
 
     GLFWwindow* hwnd;
 };

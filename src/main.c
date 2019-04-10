@@ -1,22 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define GL_SILENCE_DEPRECATION
+#include "glw.h"
 #include "app.h"
 #include "pcd.h"
 
 
-struct pcd pcd = {0};
+struct pcd pcd;
 
 
-static void init(void)
+static void init()
 {
 }
 
 
-static void draw(void)
+static void draw()
 {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
+}
+
+
+static void cleanup()
+{
+    pcd_free(&pcd);
 }
 
 
@@ -33,7 +40,7 @@ int main(int argc, char* argv[])
     struct app app = {
         .init_cb = init,
         .draw_cb = draw,
-        .cleanup_cb = NULL,
+        .cleanup_cb = cleanup,
         .error_cb = NULL,
         .width = 800,
         .height = 600,
