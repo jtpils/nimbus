@@ -69,6 +69,14 @@ static int string_to_enum(char* str, const char* list[])
 }
 
 
+static char* strdup(const char *s) {
+    size_t size = strlen(s) + 1;
+    char* p = malloc(size);
+    if (p != NULL) memcpy(p, s, size);
+    return p;
+}
+
+
 struct ply* ply_init()
 {
     struct ply* pp = calloc(1, sizeof(struct ply));

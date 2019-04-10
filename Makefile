@@ -1,10 +1,16 @@
 CC = gcc
 
+UNAME = $(shell uname)
+
 INCLUDES =
 DEFINES =
 CFLAGS = -O2 -Wall -Werror -pedantic -std=c99 $(INCLUDES) $(DEFINES)
 LDFLAGS =
+ifeq ($(UNAME),Darwin)
 LDLIBS = -lglfw -framework OpenGL
+else
+LDLIBS = -lglfw -lGL
+endif
 
 SOURCES := $(shell find src -name *.c)
 OBJECTS := $(SOURCES:%=build/%.o)
