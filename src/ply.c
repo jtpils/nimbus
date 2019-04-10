@@ -2,6 +2,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define MAX_ELEMENTS   16
 #define MAX_PROPERTIES 32
@@ -195,12 +196,68 @@ void ply_set_read_cb(struct ply* pp, const char* name, ply_read_cb read_cb, void
 }
 
 
+static double ply_read_scalar_ascii(struct ply* pp, struct element* e, struct property* p)
+{
+    switch (p->type) {
+        case PLY_CHAR:
+        case PLY_INT8: {
+            int8_t c;
+            fscanf(pp->fp, "%hhd", &c);
+            return c;
+        }
+        case PLY_UCHAR:
+        case PLY_UINT8: {
+            uint8_t c;
+            fscanf(pp->fp, "%hhu", &c);
+            return c;
+        }
+        case PLY_SHORT:
+        case PLY_INT16: {
+            int16_t s;
+            fscanf(pp->fp, "%hd", &s);
+            return s;
+        }
+        case PLY_USHORT:
+        case PLY_UINT16: {
+            uint16_t s;
+            fscanf(pp->fp, "%hu", &s);
+            return s;
+        }
+        case PLY_INT:
+        case PLY_INT32: {
+            int32_t i;
+            fscanf(pp->fp, "%d", &i);
+            return i;
+        }
+        case PLY_UINT:
+        case PLY_UINT32: {
+            uint32_t i;
+            fscanf(pp->fp, "%u", &i);
+            return i;
+        }
+        case PLY_FLOAT:
+        case PLY_FLOAT32: {
+            float f;
+            fscanf(pp->fp, "%f", &f);
+            return f;
+        }
+        case PLY_DOUBLE:
+        case PLY_FLOAT64: {
+            double f;
+            fscanf(pp->fp, "%lf", &f);
+            return f;
+        }
+    }
+    return NAN;
+}
+
+
 static double ply_read_property(struct ply* pp, struct element* e, struct property* p)
 {
     double v = NAN;
     switch (pp->format) {
         case PLY_ASCII:
-            fscanf(pp->fp, "%lf", &v);
+            v = ply_read_scalar_ascii(pp, e, p);
             break;
         case PLY_BIG_ENDIAN:
         case PLY_LITTLE_ENDIAN:
