@@ -70,7 +70,7 @@ static int string_to_enum(char* str, const char* list[])
 }
 
 
-static char* strdup(const char *s) {
+static char* _strdup(const char *s) {
     size_t size = strlen(s) + 1;
     char* p = malloc(size);
     if (p != NULL) memcpy(p, s, size);
@@ -110,7 +110,7 @@ static struct element* ply_read_header_element(struct ply* pp)
     char* word = NULL;
     struct element* e = pp->elements + pp->num_elements;
     word = strtok(NULL, " \n");
-    e->name = strdup(word);
+    e->name = _strdup(word);
     word = strtok(NULL, " \n");
     e->count = atoi(word);
     e->num_properties = 0;
@@ -133,7 +133,7 @@ static struct property* ply_read_header_property(struct ply* pp)
         p->vtype = string_to_enum(word, types);
     }
     word = strtok(NULL, " \n");
-    p->name = strdup(word);
+    p->name = _strdup(word);
     e->num_properties++;
     return p;
 }
@@ -196,9 +196,9 @@ void ply_set_read_cb(struct ply* pp, const char* name, ply_read_cb read_cb, void
 }
 
 
-static double ply_read_scalar_ascii(struct ply* pp, struct element* e, struct property* p)
+static double ply_read_scalar_ascii(struct ply* pp, int type)
 {
-    switch (p->type) {
+    switch (type) {
         case PLY_CHAR:
         case PLY_INT8: {
             int8_t c;
@@ -252,15 +252,72 @@ static double ply_read_scalar_ascii(struct ply* pp, struct element* e, struct pr
 }
 
 
+static double ply_read_scalar_binary(struct ply* pp, int type)
+{
+    switch (type) {
+        case PLY_CHAR:
+        case PLY_INT8: {
+            int8_t c;
+            fread(&c, sizeof(int8_t), 1, pp->fp);
+            return c;
+        }
+        case PLY_UCHAR:
+        case PLY_UINT8: {
+            uint8_t c;
+            fread(&c, sizeof(uint8_t), 1, pp->fp);
+            return c;
+        }
+        case PLY_SHORT:
+        case PLY_INT16: {
+            int16_t s;
+            fread(&s, sizeof(int16_t), 1, pp->fp);
+            return s;
+        }
+        case PLY_USHORT:
+        case PLY_UINT16: {
+            uint16_t s;
+            fread(&s, sizeof(uint16_t), 1, pp->fp);
+            return s;
+        }
+        case PLY_INT:
+        case PLY_INT32: {
+            int32_t i;
+            fread(&i, sizeof(int32_t), 1, pp->fp);
+            return i;
+        }
+        case PLY_UINT:
+        case PLY_UINT32: {
+            uint32_t i;
+            fread(&i, sizeof(uint32_t), 1, pp->fp);
+            return i;
+        }
+        case PLY_FLOAT:
+        case PLY_FLOAT32: {
+            float f;
+            fread(&f, sizeof(float), 1, pp->fp);
+            return f;
+        }
+        case PLY_DOUBLE:
+        case PLY_FLOAT64: {
+            double f;
+            fread(&f, sizeof(double), 1, pp->fp);
+            return f;
+        }
+    }
+    return NAN;
+}
+
+
 static double ply_read_property(struct ply* pp, struct element* e, struct property* p)
 {
     double v = NAN;
     switch (pp->format) {
         case PLY_ASCII:
-            v = ply_read_scalar_ascii(pp, e, p);
+            v = ply_read_scalar_ascii(pp, p->type);
             break;
         case PLY_BIG_ENDIAN:
         case PLY_LITTLE_ENDIAN:
+            v = ply_read_scalar_binary(pp, p->type);
             break;
     }
     return v;

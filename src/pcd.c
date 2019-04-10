@@ -32,8 +32,6 @@ void pcd_load(struct pcd* pcd, const char* fname)
     ply_set_read_cb(pp, "vertex", vertex_cb, pcd);
     ply_read(pp);
 
-    printf("%d\n", pcd->size);
-
     ply_free(pp);
     fclose(fp);
 }
