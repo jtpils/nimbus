@@ -24,6 +24,7 @@ static void app_init_glfw(struct app* app)
     }
     printf("OpenGL: %s\n", glGetString(GL_VERSION));
     printf("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
 }
 
 

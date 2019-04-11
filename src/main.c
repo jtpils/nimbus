@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define GL_SILENCE_DEPRECATION
-#include "glw.h"
 #include "app.h"
 #include "pcd.h"
 
@@ -11,6 +9,7 @@ struct pcd pcd;
 
 static void init()
 {
+    pcd_setup_gl(&pcd);
 }
 
 

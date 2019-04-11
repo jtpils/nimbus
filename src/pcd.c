@@ -1,7 +1,8 @@
 #include "pcd.h"
-#include "ply.h"
 #include <string.h>
 #include <stdlib.h>
+#include "glw.h"
+#include "ply.h"
 
 
 static void vertex_cb(double v, const char* name, int i, void* data)
@@ -16,6 +17,34 @@ static void vertex_cb(double v, const char* name, int i, void* data)
     else if (!strcmp(name, "nx")) pcd->normal[i].x = v;
     else if (!strcmp(name, "ny")) pcd->normal[i].y = v;
     else if (!strcmp(name, "nz")) pcd->normal[i].z = v;
+}
+
+
+void pcd_setup_gl(struct pcd* pcd)
+{
+    struct buffer vbo = {
+        .size = pcd->size * sizeof(vec3),
+        .type = GL_ARRAY_BUFFER,
+        .usage = GL_STATIC_DRAW,
+        .data = pcd->pos
+    };
+    struct shader shd = {
+        .vs.src =
+        "#version 330\n"
+        "in vec3 pos;\n"
+        "void main() {\n"
+        "    gl_Position = vec4(pos, 1.0);\n"
+        "}\n",
+        .fs.src =
+        "#version 330\n"
+        "out vec4 FragColor;\n"
+        "void main() {\n"
+        "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
+        "}\n"
+    };
+
+    pcd->vbo = glw_buffer_init(&vbo);
+    pcd->shd = glw_shader_init(&shd);
 }
 
 
@@ -52,4 +81,8 @@ void pcd_free(struct pcd* pcd)
     free(pcd->pos);
     free(pcd->normal);
     free(pcd->color);
+
+    glw_buffer_free(pcd->vbo);
+    glw_shader_free(pcd->shd);
+    glw_pipeline_free(pcd->pip);
 }
