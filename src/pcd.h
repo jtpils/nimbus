@@ -1,13 +1,14 @@
 #pragma once
 
 
-typedef struct { double x, y, z; } vec3;
-typedef struct { unsigned char r, g, b; } rgb8;
+struct vertex {
+    double x, y, z;
+    double nx, ny, nz;
+    unsigned char r, g, b;
+};
 
 struct pcd {
-    vec3* pos;
-    vec3* normal;
-    rgb8* color;
+    struct vertex* data;
     int size;
 
     unsigned int vbo;

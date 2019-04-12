@@ -8,25 +8,25 @@
 static void vertex_cb(double v, const char* name, int i, void* data)
 {
     struct pcd* pcd = (struct pcd*)(data);
-    if (!strcmp(name, "x")) pcd->pos[i].x = v;
-    else if (!strcmp(name, "y")) pcd->pos[i].y = v;
-    else if (!strcmp(name, "z")) pcd->pos[i].z = v;
-    else if (!strcmp(name, "red")) pcd->color[i].r = v;
-    else if (!strcmp(name, "green")) pcd->color[i].g = v;
-    else if (!strcmp(name, "blue")) pcd->color[i].b = v;
-    else if (!strcmp(name, "nx")) pcd->normal[i].x = v;
-    else if (!strcmp(name, "ny")) pcd->normal[i].y = v;
-    else if (!strcmp(name, "nz")) pcd->normal[i].z = v;
+    if (!strcmp(name, "x")) pcd->data[i].x = v;
+    else if (!strcmp(name, "y")) pcd->data[i].y = v;
+    else if (!strcmp(name, "z")) pcd->data[i].z = v;
+    else if (!strcmp(name, "red")) pcd->data[i].r = v;
+    else if (!strcmp(name, "green")) pcd->data[i].g = v;
+    else if (!strcmp(name, "blue")) pcd->data[i].b = v;
+    else if (!strcmp(name, "nx")) pcd->data[i].nx = v;
+    else if (!strcmp(name, "ny")) pcd->data[i].ny = v;
+    else if (!strcmp(name, "nz")) pcd->data[i].nz = v;
 }
 
 
 void pcd_setup_gl(struct pcd* pcd)
 {
     struct buffer vbo = {
-        .size = pcd->size * sizeof(vec3),
+        .size = pcd->size * sizeof(struct vertex),
         .type = GL_ARRAY_BUFFER,
         .usage = GL_STATIC_DRAW,
-        .data = pcd->pos
+        .data = pcd->data
     };
     struct shader shd = {
         .vs.src =
@@ -68,9 +68,7 @@ void pcd_load(struct pcd* pcd, const char* fname)
 
 void pcd_alloc(struct pcd* pcd, int size)
 {
-    pcd->pos = realloc(pcd->pos, sizeof(vec3) * size);
-    pcd->normal = realloc(pcd->normal, sizeof(vec3) * size);
-    pcd->color = realloc(pcd->color, sizeof(vec3) * size);
+    pcd->data = realloc(pcd->data, sizeof(struct vertex) * size);
     pcd->size = size;
 }
 
@@ -78,10 +76,7 @@ void pcd_alloc(struct pcd* pcd, int size)
 void pcd_free(struct pcd* pcd)
 {
     pcd->size = 0;
-    free(pcd->pos);
-    free(pcd->normal);
-    free(pcd->color);
-
+    free(pcd->data);
     glw_buffer_free(pcd->vbo);
     glw_shader_free(pcd->shd);
     glw_pipeline_free(pcd->pip);
