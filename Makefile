@@ -4,7 +4,7 @@ UNAME = $(shell uname)
 
 INCLUDES = -Iinclude
 DEFINES =
-CFLAGS = -O2 -Wall -Werror -pedantic -std=c99 $(INCLUDES) $(DEFINES)
+CFLAGS = -O2 -Wall -Werror -pedantic $(INCLUDES) $(DEFINES)
 LDFLAGS =
 ifeq ($(UNAME),Darwin)
 LDLIBS = -lglfw -framework OpenGL

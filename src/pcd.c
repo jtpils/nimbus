@@ -8,15 +8,15 @@
 static void vertex_cb(double v, const char* name, int i, void* data)
 {
     struct pcd* pcd = (struct pcd*)(data);
-    if (!strcmp(name, "x")) pcd->data[i].x = v;
-    else if (!strcmp(name, "y")) pcd->data[i].y = v;
-    else if (!strcmp(name, "z")) pcd->data[i].z = v;
-    else if (!strcmp(name, "red")) pcd->data[i].r = v;
-    else if (!strcmp(name, "green")) pcd->data[i].g = v;
-    else if (!strcmp(name, "blue")) pcd->data[i].b = v;
-    else if (!strcmp(name, "nx")) pcd->data[i].nx = v;
-    else if (!strcmp(name, "ny")) pcd->data[i].ny = v;
-    else if (!strcmp(name, "nz")) pcd->data[i].nz = v;
+    if (!strcmp(name, "x")) pcd->data[i].pos.x = v;
+    else if (!strcmp(name, "y")) pcd->data[i].pos.y = v;
+    else if (!strcmp(name, "z")) pcd->data[i].pos.z = v;
+    else if (!strcmp(name, "red")) pcd->data[i].color.r = v / 255.0;
+    else if (!strcmp(name, "green")) pcd->data[i].color.g = v / 255.0;
+    else if (!strcmp(name, "blue")) pcd->data[i].color.b = v / 255.0;
+    else if (!strcmp(name, "nx")) pcd->data[i].normal.x = v;
+    else if (!strcmp(name, "ny")) pcd->data[i].normal.y = v;
+    else if (!strcmp(name, "nz")) pcd->data[i].normal.z = v;
 }
 
 
@@ -28,23 +28,53 @@ void pcd_setup_gl(struct pcd* pcd)
         .usage = GL_STATIC_DRAW,
         .data = pcd->data
     };
+    pcd->vbo = glw_buffer_init(&vbo);
+
     struct shader shd = {
         .vs.src =
         "#version 330\n"
-        "in vec3 pos;\n"
+        "(location = 0) in vec3 pos;\n"
+        "(location = 1) in vec3 normal;\n"
+        "(location = 2) in vec3 color;\n"
+        "out vec3 VertColor;\n"
         "void main() {\n"
         "    gl_Position = vec4(pos, 1.0);\n"
         "}\n",
         .fs.src =
         "#version 330\n"
+        "in vec3 VertColor;\n"
         "out vec4 FragColor;\n"
         "void main() {\n"
-        "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
+        "    FragColor = vec4(VertColor, 1.0);\n"
         "}\n"
     };
-
-    pcd->vbo = glw_buffer_init(&vbo);
     pcd->shd = glw_shader_init(&shd);
+
+    struct layout lay = {
+        .vbo = pcd->vbo,
+        .shader = pcd->shd,
+        .attrs = {
+            [0] = {
+                .size = 3,
+                .type = GL_FLOAT,
+                .stride = sizeof(struct vertex),
+                .offset = 0
+            },
+            [1] = {
+                .size = 3,
+                .type = GL_FLOAT,
+                .stride = sizeof(struct vertex),
+                .offset = 1 * sizeof(vec3)
+            },
+            [2] = {
+                .size = 3,
+                .type = GL_FLOAT,
+                .stride = sizeof(struct vertex),
+                .offset = 2 * sizeof(vec3)
+            },
+        }
+    };
+    pcd->lay = glw_layout_init(&lay);
 }
 
 
@@ -79,5 +109,17 @@ void pcd_free(struct pcd* pcd)
     free(pcd->data);
     glw_buffer_free(pcd->vbo);
     glw_shader_free(pcd->shd);
-    glw_pipeline_free(pcd->pip);
+    glw_layout_free(pcd->lay);
+}
+
+
+void pcd_draw(struct pcd* pcd)
+{
+    struct render rnd = {
+        .primitive = GL_POINTS,
+        .type = GLW_NONE,
+        .first = 0,
+        .count = pcd->size
+    };
+    glw_render(&rnd);
 }

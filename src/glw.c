@@ -6,8 +6,8 @@ unsigned int glw_buffer_init(struct buffer* buf)
 {
     unsigned int id = 0;
     glGenBuffers(1, &id);
-    glBindBuffer(id, buf->type);
-    glBufferData(id, buf->size, buf->data, buf->usage);
+    glBindBuffer(buf->type, id);
+    glBufferData(buf->type, buf->size, buf->data, buf->usage);
     return id;
 }
 
@@ -32,6 +32,25 @@ unsigned int glw_shader_init(struct shader* shd)
 }
 
 
+unsigned int glw_layout_init(struct layout* lay)
+{
+    unsigned int vao = 0;
+
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, lay->vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lay->ebo);
+    for (int i = 0; i < GLW_MAX_ATTRIBUTES; ++i) {
+        struct attribute attr = lay->attrs[i];
+        if (!attr.type) continue;
+        glVertexAttribPointer(i, attr.size, attr.type, GL_FALSE, attr.stride, (void*)attr.offset);
+        glEnableVertexAttribArray(i);
+    }
+
+    return vao;
+}
+
+
 void glw_buffer_free(unsigned int buf)
 {
     glDeleteBuffers(1, &buf);
@@ -44,7 +63,20 @@ void glw_shader_free(unsigned int shd)
 }
 
 
-void glw_pipeline_free(unsigned int pip)
+void glw_layout_free(unsigned int lay)
 {
-    glDeleteVertexArrays(1, &pip);
+    glDeleteVertexArrays(1, &lay);
+}
+
+
+void glw_clear(int mask, vec4 color)
+{
+    glClearColor(color.r, color.g, color.b, color.a);
+    glClear(mask);
+}
+
+
+void glw_render(struct render* rnd)
+{
+
 }

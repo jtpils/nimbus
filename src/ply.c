@@ -70,14 +70,6 @@ static int string_to_enum(char* str, const char* list[])
 }
 
 
-static char* _strdup(const char *s) {
-    size_t size = strlen(s) + 1;
-    char* p = malloc(size);
-    if (p != NULL) memcpy(p, s, size);
-    return p;
-}
-
-
 struct ply* ply_init()
 {
     struct ply* pp = calloc(1, sizeof(struct ply));
@@ -110,7 +102,7 @@ static struct element* ply_read_header_element(struct ply* pp)
     char* word = NULL;
     struct element* e = pp->elements + pp->num_elements;
     word = strtok(NULL, " \n");
-    e->name = _strdup(word);
+    e->name = strdup(word);
     word = strtok(NULL, " \n");
     e->count = atoi(word);
     e->num_properties = 0;
@@ -133,7 +125,7 @@ static struct property* ply_read_header_property(struct ply* pp)
         p->vtype = string_to_enum(word, types);
     }
     word = strtok(NULL, " \n");
-    p->name = _strdup(word);
+    p->name = strdup(word);
     e->num_properties++;
     return p;
 }

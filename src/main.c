@@ -15,8 +15,9 @@ static void init()
 
 static void draw()
 {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    vec4 color = {.r = 0.0f, .g = 0.0f, .b = 0.0f, .a = 1.0f};
+    glw_clear(GL_COLOR_BUFFER_BIT, color);
+    pcd_draw(&pcd);
 }
 
 
