@@ -16,7 +16,8 @@ static void init()
 static void draw()
 {
     vec4 color = {.r = 0.0f, .g = 0.0f, .b = 0.0f, .a = 1.0f};
-    glw_clear(GL_COLOR_BUFFER_BIT, color);
+    int mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+    glw_clear(mask, color);
     pcd_draw(&pcd);
 }
 

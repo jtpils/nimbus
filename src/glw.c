@@ -51,6 +51,18 @@ unsigned int glw_layout_init(struct layout* lay)
 }
 
 
+void glw_shader_bind(unsigned int shd)
+{
+    glUseProgram(shd);
+}
+
+
+void glw_layout_bind(unsigned int lay)
+{
+    glBindVertexArray(lay);
+}
+
+
 void glw_buffer_free(unsigned int buf)
 {
     glDeleteBuffers(1, &buf);
@@ -78,5 +90,8 @@ void glw_clear(int mask, vec4 color)
 
 void glw_render(struct render* rnd)
 {
-
+    if (rnd->type == GLW_NONE) {
+        glDrawArrays(rnd->mode, rnd->first, rnd->count);
+    } else {
+    }
 }

@@ -33,44 +33,27 @@ void pcd_setup_gl(struct pcd* pcd)
     struct shader shd = {
         .vs.src =
         "#version 330\n"
-        "(location = 0) in vec3 pos;\n"
-        "(location = 1) in vec3 normal;\n"
-        "(location = 2) in vec3 color;\n"
-        "out vec3 VertColor;\n"
+        "layout (location = 0) in vec3 pos;\n"
         "void main() {\n"
         "    gl_Position = vec4(pos, 1.0);\n"
         "}\n",
         .fs.src =
         "#version 330\n"
-        "in vec3 VertColor;\n"
         "out vec4 FragColor;\n"
         "void main() {\n"
-        "    FragColor = vec4(VertColor, 1.0);\n"
+        "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
         "}\n"
     };
     pcd->shd = glw_shader_init(&shd);
 
     struct layout lay = {
         .vbo = pcd->vbo,
-        .shader = pcd->shd,
         .attrs = {
             [0] = {
                 .size = 3,
                 .type = GL_FLOAT,
                 .stride = sizeof(struct vertex),
                 .offset = 0
-            },
-            [1] = {
-                .size = 3,
-                .type = GL_FLOAT,
-                .stride = sizeof(struct vertex),
-                .offset = 1 * sizeof(vec3)
-            },
-            [2] = {
-                .size = 3,
-                .type = GL_FLOAT,
-                .stride = sizeof(struct vertex),
-                .offset = 2 * sizeof(vec3)
             },
         }
     };
@@ -116,10 +99,12 @@ void pcd_free(struct pcd* pcd)
 void pcd_draw(struct pcd* pcd)
 {
     struct render rnd = {
-        .primitive = GL_POINTS,
+        .mode = GL_POINTS,
         .type = GLW_NONE,
         .first = 0,
         .count = pcd->size
     };
+    glw_shader_bind(pcd->shd);
+    glw_layout_bind(pcd->lay);
     glw_render(&rnd);
 }

@@ -36,7 +36,6 @@ struct args {
     int size;
     struct uniform uniforms[GLW_MAX_UNIFORMS];
 };
-b
 
 struct stage {
     const char* src;
@@ -58,12 +57,11 @@ struct attribute {
 struct layout {
     unsigned int vbo;
     unsigned int ebo;
-    unsigned int shader;
     struct attribute attrs[GLW_MAX_ATTRIBUTES];
 };
 
 struct render {
-    int primitive;
+    int mode;
     int type;
     int first;
     int count;
@@ -73,6 +71,7 @@ struct render {
 unsigned int glw_buffer_init(struct buffer* buf);
 unsigned int glw_shader_init(struct shader* shd);
 unsigned int glw_layout_init(struct layout* lay);
+void glw_shader_bind(unsigned int shd);
 void glw_layout_bind(unsigned int lay);
 void glw_buffer_free(unsigned int buf);
 void glw_shader_free(unsigned int shd);
