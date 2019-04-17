@@ -83,7 +83,7 @@ void glw_layout_free(unsigned int lay)
 
 void glw_clear(int mask, vec4 color)
 {
-    glClearColor(color.r, color.g, color.b, color.a);
+    glClearColor(color[0], color[1], color[2], color[3]);
     glClear(mask);
 }
 

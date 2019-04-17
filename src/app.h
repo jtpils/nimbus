@@ -1,6 +1,7 @@
 #pragma once
 #include <stdbool.h>
 #include "glw.h"
+#include "camera.h"
 
 
 struct app {
@@ -17,6 +18,7 @@ struct app {
     char* title;
 
     GLFWwindow* hwnd;
+    struct camera cam;
 };
 
 

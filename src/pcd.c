@@ -8,15 +8,15 @@
 static void vertex_cb(double v, const char* name, int i, void* data)
 {
     struct pcd* pcd = (struct pcd*)(data);
-    if (!strcmp(name, "x")) pcd->data[i].pos.x = v;
-    else if (!strcmp(name, "y")) pcd->data[i].pos.y = v;
-    else if (!strcmp(name, "z")) pcd->data[i].pos.z = v;
-    else if (!strcmp(name, "red")) pcd->data[i].color.r = v / 255.0;
-    else if (!strcmp(name, "green")) pcd->data[i].color.g = v / 255.0;
-    else if (!strcmp(name, "blue")) pcd->data[i].color.b = v / 255.0;
-    else if (!strcmp(name, "nx")) pcd->data[i].normal.x = v;
-    else if (!strcmp(name, "ny")) pcd->data[i].normal.y = v;
-    else if (!strcmp(name, "nz")) pcd->data[i].normal.z = v;
+    if (!strcmp(name, "x")) pcd->data[i].pos[0] = v;
+    else if (!strcmp(name, "y")) pcd->data[i].pos[1] = v;
+    else if (!strcmp(name, "z")) pcd->data[i].pos[2] = v;
+    else if (!strcmp(name, "red")) pcd->data[i].color[0] = v / 255.0;
+    else if (!strcmp(name, "green")) pcd->data[i].color[1] = v / 255.0;
+    else if (!strcmp(name, "blue")) pcd->data[i].color[2] = v / 255.0;
+    else if (!strcmp(name, "nx")) pcd->data[i].normal[0] = v;
+    else if (!strcmp(name, "ny")) pcd->data[i].normal[1] = v;
+    else if (!strcmp(name, "nz")) pcd->data[i].normal[2] = v;
 }
 
 

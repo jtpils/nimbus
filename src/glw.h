@@ -2,22 +2,11 @@
 #define GL_SILENCE_DEPRECATION
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+#include <cglm/cglm.h>
 
 #define GLW_MAX_UNIFORMS   16
 #define GLW_MAX_ATTRIBUTES 8
 #define GLW_NONE           0
-
-
-typedef union {
-    struct { float x, y, z; };
-    struct { float r, g, b; };
-} vec3;
-
-
-typedef union {
-    struct { float x, y, z, w; };
-    struct { float r, g, b, a; };
-} vec4;
 
 
 struct buffer {
