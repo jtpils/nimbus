@@ -9,8 +9,10 @@ struct vertex {
 };
 
 struct pcd {
-    struct vertex* data;
     int size;
+    struct vertex* data;
+
+    mat4 mvp;
 
     unsigned int vbo;
     unsigned int shd;

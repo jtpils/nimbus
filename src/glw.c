@@ -57,6 +57,21 @@ void glw_shader_bind(unsigned int shd)
 }
 
 
+void glw_shader_args(unsigned int shd, struct uniform* args, int n)
+{
+    for (int i = 0; i < n; ++i) {
+        unsigned int loc = glGetUniformLocation(shd, args[i].name);
+        switch (args[i].type) {
+            case GLW_MAT4:
+                glUniformMatrix4fv(loc, 1, GL_FALSE, args[i].data);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+
 void glw_layout_bind(unsigned int lay)
 {
     glBindVertexArray(lay);

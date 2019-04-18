@@ -22,6 +22,8 @@ static void vertex_cb(double v, const char* name, int i, void* data)
 
 void pcd_setup_gl(struct pcd* pcd)
 {
+    glm_mat4_identity(pcd->mvp);
+
     struct buffer vbo = {
         .size = pcd->size * sizeof(struct vertex),
         .type = GL_ARRAY_BUFFER,
@@ -34,8 +36,9 @@ void pcd_setup_gl(struct pcd* pcd)
         .vs.src =
         "#version 330\n"
         "layout (location = 0) in vec3 pos;\n"
+        "uniform mat4 mvp;\n"
         "void main() {\n"
-        "    gl_Position = vec4(pos, 1.0);\n"
+        "    gl_Position = mvp * vec4(pos, 1.0);\n"
         "}\n",
         .fs.src =
         "#version 330\n"
@@ -104,7 +107,12 @@ void pcd_draw(struct pcd* pcd)
         .first = 0,
         .count = pcd->size
     };
+    struct uniform args[] = {
+        [0] = {.name = "mvp", .type = GLW_MAT4, .data = (float*)pcd->mvp}
+    };
+
     glw_shader_bind(pcd->shd);
+    glw_shader_args(pcd->shd, args, 1);
     glw_layout_bind(pcd->lay);
     glw_render(&rnd);
 }

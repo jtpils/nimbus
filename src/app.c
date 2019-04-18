@@ -22,7 +22,7 @@ static void app_event_push(struct event* e)
 static bool app_event_pop(struct event* e)
 {
     if (state.top) {
-        (*e) = state.events[state.top--];
+        (*e) = state.events[--state.top];
         return true;
     }
     return false;

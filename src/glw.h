@@ -4,10 +4,17 @@
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
-#define GLW_MAX_UNIFORMS   16
 #define GLW_MAX_ATTRIBUTES 8
 #define GLW_NONE           0
 
+
+enum {
+    GLW_FLOAT,
+    GLW_FLOAT2,
+    GLW_FLOAT3,
+    GLW_FLOAT4,
+    GLW_MAT4
+};
 
 struct buffer {
     int size;
@@ -19,16 +26,11 @@ struct buffer {
 struct uniform {
     int type;
     const char* name;
-};
-
-struct args {
-    int size;
-    struct uniform uniforms[GLW_MAX_UNIFORMS];
+    const void* data;
 };
 
 struct stage {
     const char* src;
-    struct args args;
 };
 
 struct shader {
@@ -61,6 +63,7 @@ unsigned int glw_buffer_init(struct buffer* buf);
 unsigned int glw_shader_init(struct shader* shd);
 unsigned int glw_layout_init(struct layout* lay);
 void glw_shader_bind(unsigned int shd);
+void glw_shader_args(unsigned int shd, struct uniform* args, int n);
 void glw_layout_bind(unsigned int lay);
 void glw_buffer_free(unsigned int buf);
 void glw_shader_free(unsigned int shd);
