@@ -22,14 +22,16 @@ static void input(struct event* e)
     switch (e->type) {
         case APP_KEY_DOWN:
             if (e->key == GLFW_KEY_W)
-                camera_move(&cam, CAMERA_FORWARD, step);
+                camera_move(&cam, step, CAMERA_FORWARD);
             else if (e->key == GLFW_KEY_S)
-                camera_move(&cam, CAMERA_BACKWARD, step);
+                camera_move(&cam, step, CAMERA_BACKWARD);
             else if (e->key == GLFW_KEY_A)
-                camera_move(&cam, CAMERA_LEFT, step);
+                camera_move(&cam, step, CAMERA_RIGHT);
             else if (e->key == GLFW_KEY_D)
-                camera_move(&cam, CAMERA_RIGHT, step);
+                camera_move(&cam, step, CAMERA_LEFT);
             break;
+        case APP_MOUSE_SCROLL:
+            camera_zoom(&cam, e->scroll[1]);
         default:
             break;
     }

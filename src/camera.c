@@ -10,8 +10,9 @@ void camera_reset(struct camera* cam)
     cam->pitch = 0.0f;
     cam->fovy = 45.0f;
     cam->aspect = CAMERA_ASPECT_4_3;
-    cam->znear = 0.0001f;
-    cam->zfar  = 10.0f;
+    cam->znear = 0.001f;
+    cam->zfar  = 100.0f;
+    cam->sensitivity = 0.1f;
     camera_sync(cam);
 }
 
@@ -29,7 +30,7 @@ void camera_sync(struct camera* cam)
 }
 
 
-void camera_move(struct camera* cam, int dir, float step)
+void camera_move(struct camera* cam, float step, int dir)
 {
     vec3 delta;
     switch (dir) {
@@ -48,4 +49,12 @@ void camera_move(struct camera* cam, int dir, float step)
     }
     glm_vec3_scale(delta, step, delta);
     glm_vec3_add(cam->target, delta, cam->target);
+}
+
+
+void camera_zoom(struct camera* cam, float step)
+{
+    cam->fovy += cam->sensitivity * step;
+    cam->fovy = cam->fovy <=  1.0f ?  1.0f : cam->fovy;
+    cam->fovy = cam->fovy >= 45.0f ? 45.0f : cam->fovy;
 }

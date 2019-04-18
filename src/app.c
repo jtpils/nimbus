@@ -29,7 +29,7 @@ static bool app_event_pop(struct event* e)
 }
 
 
-static void app_key_cb_glfw(GLFWwindow* hwnd, int key, int code, int action, int mods)
+static void app_glfw_key_cb(GLFWwindow* hwnd, int key, int code, int action, int mods)
 {
     struct event e;
     switch (action) {
@@ -41,6 +41,16 @@ static void app_key_cb_glfw(GLFWwindow* hwnd, int key, int code, int action, int
         default:
             break;
     }
+    app_event_push(&e);
+}
+
+
+static void app_glfw_scroll_cb(GLFWwindow* hwnd, double dx, double dy)
+{
+    struct event e;
+    e.type = APP_MOUSE_SCROLL;
+    e.scroll[0] = dx;
+    e.scroll[1] = dy;
     app_event_push(&e);
 }
 
@@ -61,7 +71,8 @@ static void app_init_glfw(struct app* app)
 
     glfwMakeContextCurrent(app->hwnd);
     glfwSwapInterval(app->swap_interval);
-    glfwSetKeyCallback(app->hwnd, app_key_cb_glfw);
+    glfwSetKeyCallback(app->hwnd, app_glfw_key_cb);
+    glfwSetScrollCallback(app->hwnd, app_glfw_scroll_cb);
 
     if (gl3wInit()) {
         fprintf(stderr, "[GL3W] initialisation failed\n");

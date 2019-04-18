@@ -8,7 +8,7 @@ enum {
     CAMERA_FORWARD,
     CAMERA_BACKWARD,
     CAMERA_LEFT,
-    CAMERA_RIGHT
+    CAMERA_RIGHT,
 };
 
 struct camera {
@@ -25,8 +25,11 @@ struct camera {
     float aspect;
     float znear;
     float zfar;
+
+    float sensitivity;
 };
 
 void camera_reset(struct camera* cam);
 void camera_sync(struct camera* cam);
-void camera_move(struct camera* cam, int dir, float step);
+void camera_move(struct camera* cam, float step, int dir);
+void camera_zoom(struct camera* cam, float step);
