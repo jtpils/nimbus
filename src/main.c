@@ -6,7 +6,7 @@
 
 struct pcd pcd;
 struct camera cam;
-const float velocity = 0.02f;
+const float accel = 0.02f;
 const float step = 0.2f;
 
 
@@ -42,10 +42,10 @@ static void draw()
     int mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
     glw_clear(mask, color);
 
-    vec3 speed; /* smooth camera movement */
-    glm_vec3_sub(cam.target, cam.eye, speed);
-    glm_vec3_scale(dist, velocity, speed);
-    glm_vec3_add(cam.eye, speed, cam.eye);
+    vec3 dist; /* smooth camera movement */
+    glm_vec3_sub(cam.target, cam.eye, dist);
+    glm_vec3_scale(dist, accel, dist);
+    glm_vec3_add(cam.eye, dist, cam.eye);
 
     mat4 proj, view; /* update MVP */
     glm_perspective(cam.fovy, cam.aspect, cam.znear, cam.zfar, proj);
