@@ -29,7 +29,7 @@ void camera_sync(struct camera* cam)
 }
 
 
-void camera_move(struct camera* cam, int dir, float velocity)
+void camera_move(struct camera* cam, int dir, float step)
 {
     vec3 delta;
     switch (dir) {
@@ -46,6 +46,6 @@ void camera_move(struct camera* cam, int dir, float velocity)
             glm_vec3_negate_to(cam->right, delta);
             break;
     }
-    glm_vec3_scale(delta, velocity, delta);
-    glm_vec3_add(cam->eye, delta, cam->eye);
+    glm_vec3_scale(delta, step, delta);
+    glm_vec3_add(cam->target, delta, cam->target);
 }

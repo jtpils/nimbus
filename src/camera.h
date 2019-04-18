@@ -16,6 +16,7 @@ struct camera {
     vec3 dir;
     vec3 up;
     vec3 right;
+    vec3 target;
 
     float yaw;
     float pitch;
@@ -28,4 +29,4 @@ struct camera {
 
 void camera_reset(struct camera* cam);
 void camera_sync(struct camera* cam);
-void camera_move(struct camera* cam, int dir, float velocity);
+void camera_move(struct camera* cam, int dir, float step);

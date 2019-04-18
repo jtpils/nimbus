@@ -6,7 +6,8 @@
 
 struct pcd pcd;
 struct camera cam;
-float velocity = 0.1f;
+const float velocity = 0.02f;
+const float step = 0.2f;
 
 
 static void init()
@@ -20,10 +21,14 @@ static void input(struct event* e)
 {
     switch (e->type) {
         case APP_KEY_DOWN:
-            if (e->key == GLFW_KEY_W) camera_move(&cam, CAMERA_FORWARD, velocity);
-            else if (e->key == GLFW_KEY_S) camera_move(&cam, CAMERA_BACKWARD, velocity);
-            else if (e->key == GLFW_KEY_A) camera_move(&cam, CAMERA_LEFT, velocity);
-            else if (e->key == GLFW_KEY_D) camera_move(&cam, CAMERA_RIGHT, velocity);
+            if (e->key == GLFW_KEY_W)
+                camera_move(&cam, CAMERA_FORWARD, step);
+            else if (e->key == GLFW_KEY_S)
+                camera_move(&cam, CAMERA_BACKWARD, step);
+            else if (e->key == GLFW_KEY_A)
+                camera_move(&cam, CAMERA_LEFT, step);
+            else if (e->key == GLFW_KEY_D)
+                camera_move(&cam, CAMERA_RIGHT, step);
             break;
         default:
             break;
@@ -37,7 +42,12 @@ static void draw()
     int mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
     glw_clear(mask, color);
 
-    mat4 proj, view;
+    vec3 speed; /* smooth camera movement */
+    glm_vec3_sub(cam.target, cam.eye, speed);
+    glm_vec3_scale(dist, velocity, speed);
+    glm_vec3_add(cam.eye, speed, cam.eye);
+
+    mat4 proj, view; /* update MVP */
     glm_perspective(cam.fovy, cam.aspect, cam.znear, cam.zfar, proj);
     glm_look(cam.eye, cam.dir, cam.up, view);
     glm_mat4_mul(proj, view, pcd.mvp);
