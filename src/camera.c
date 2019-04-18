@@ -12,7 +12,7 @@ void camera_reset(struct camera* cam)
     cam->aspect = CAMERA_ASPECT_4_3;
     cam->znear = 0.001f;
     cam->zfar  = 100.0f;
-    cam->sensitivity = 0.1f;
+    cam->sensitivity = 0.5f;
     camera_sync(cam);
 }
 

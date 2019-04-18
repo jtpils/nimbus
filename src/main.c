@@ -50,7 +50,8 @@ static void draw()
     glm_vec3_add(cam.eye, dist, cam.eye);
 
     mat4 proj, view; /* update MVP */
-    glm_perspective(cam.fovy, cam.aspect, cam.znear, cam.zfar, proj);
+    float fovy = glm_rad(cam.fovy);
+    glm_perspective(fovy, cam.aspect, cam.znear, cam.zfar, proj);
     glm_look(cam.eye, cam.dir, cam.up, view);
     glm_mat4_mul(proj, view, pcd.mvp);
 
