@@ -16,8 +16,8 @@ struct camera {
     float fov;
 };
 
-
-void camera_view_matrix(struct camera* cam, mat4 view);
+void camera_reset(struct camera* cam);
 void camera_update(struct camera* cam);
+void camera_view_matrix(struct camera* cam, mat4 view);
 void camera_move(struct camera* cam, float dx, float dy);
 void camera_zoom(struct camera* cam, float dx, float dy);

@@ -5,11 +5,18 @@
 
 
 struct pcd pcd;
+struct camera cam;
 
 
 static void init()
 {
     pcd_setup_gl(&pcd);
+}
+
+
+static void input(struct event* e)
+{
+    if (e->type == APP_KEY_DOWN);
 }
 
 
@@ -43,6 +50,7 @@ int main(int argc, char* argv[])
         .draw_cb = draw,
         .cleanup_cb = cleanup,
         .error_cb = NULL,
+        .event_cb = input,
         .width = 800,
         .height = 600,
         .title = "nimbus"
