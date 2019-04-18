@@ -80,7 +80,8 @@ int main(int argc, char* argv[])
         .event_cb = input,
         .width = 800,
         .height = 600,
-        .title = "nimbus"
+        .title = "nimbus",
+        .swap_interval = 1
     };
     return app_run(&app);
 }
