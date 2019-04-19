@@ -9,7 +9,7 @@ LDFLAGS =
 ifeq ($(UNAME),Darwin)
 LDLIBS = -lglfw -framework OpenGL
 else
-LDLIBS = -lglfw -lGL -ldl
+LDLIBS = -lglfw -lGL -ldl -lm
 endif
 
 SOURCES := $(shell find src -name *.c)
