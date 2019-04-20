@@ -6,6 +6,7 @@
 
 enum {
     APP_KEY_DOWN,
+    APP_KEY_UP,
     APP_MOUSE_DOWN,
     APP_MOUSE_SCROLL,
 };
@@ -20,10 +21,10 @@ struct event {
 };
 
 struct app {
-    void (*init_cb)(void);
-    void (*draw_cb)(void);
-    void (*cleanup_cb)(void);
-    void (*error_cb)(void);
+    void (*init_cb)();
+    void (*draw_cb)();
+    void (*cleanup_cb)();
+    void (*error_cb)();
     void (*event_cb)(struct event*);
 
     int width;
@@ -34,7 +35,11 @@ struct app {
     char* title;
 
     GLFWwindow* hwnd;
+
+    float prev;
+    float now;
 };
 
 
 int app_run(struct app* app);
+float app_get_time();

@@ -36,15 +36,18 @@ void pcd_setup_gl(struct pcd* pcd)
         .vs.src =
         "#version 330\n"
         "layout (location = 0) in vec3 pos;\n"
+        "out vec3 VertColor;\n"
         "uniform mat4 mvp;\n"
         "void main() {\n"
+        "    VertColor = normalize(abs(pos));\n"
         "    gl_Position = mvp * vec4(pos, 1.0);\n"
         "}\n",
         .fs.src =
         "#version 330\n"
+        "in vec3 VertColor;\n"
         "out vec4 FragColor;\n"
         "void main() {\n"
-        "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
+        "    FragColor = vec4(VertColor, 1.0);\n"
         "}\n"
     };
     pcd->shd = glw_shader_init(&shd);

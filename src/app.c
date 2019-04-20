@@ -38,8 +38,11 @@ static void app_glfw_key_cb(GLFWwindow* hwnd, int key, int code, int action, int
             e.key  = key;
             e.mods = mods;
             break;
-        default:
-            break;
+        case GLFW_RELEASE:
+            e.type = APP_KEY_UP;
+            e.key  = key;
+            e.mods = mods;
+        default: break;
     }
     app_event_push(&e);
 }
@@ -80,6 +83,7 @@ static void app_init_glfw(struct app* app)
     printf("OpenGL: %s\n", glGetString(GL_VERSION));
     printf("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+    glEnable(GL_DEPTH_TEST);
 }
 
 
@@ -118,4 +122,10 @@ int app_run(struct app* app)
 
     if (app->cleanup_cb) app->cleanup_cb();
     return 0;
+}
+
+
+float app_get_time()
+{
+    return glfwGetTime();
 }
