@@ -32,9 +32,6 @@ void camera_move(struct camera* cam, int move, float dt)
         case CAMERA_LEFT:
             glm_vec3_negate_to(cam->right, v);
             break;
-        case CAMERA_STILL:
-            glm_vec3_zero(v);
-            break;
     }
     glm_vec3_scale(v, cam->speed * dt, v);
     glm_vec3_add(cam->eye, v, cam->eye);

@@ -8,7 +8,8 @@ struct pcd pcd;
 struct camera cam;
 
 float prev = 0.0f;
-int move = CAMERA_STILL;
+
+bool move[CAMERA_NUM_DIRECTION] = {0};
 
 
 static void init()
@@ -22,16 +23,16 @@ static void input(struct event* e)
 {
     switch (e->type) {
         case APP_KEY_DOWN:
-            if (e->key == GLFW_KEY_W) move = CAMERA_FORWARD;
-            else if (e->key == GLFW_KEY_S) move = CAMERA_BACKWARD;
-            else if (e->key == GLFW_KEY_A) move = CAMERA_LEFT;
-            else if (e->key == GLFW_KEY_D) move = CAMERA_RIGHT;
+            if (e->key == GLFW_KEY_W) move[CAMERA_FORWARD]  = true;
+            if (e->key == GLFW_KEY_S) move[CAMERA_BACKWARD] = true;
+            if (e->key == GLFW_KEY_A) move[CAMERA_LEFT]     = true;
+            if (e->key == GLFW_KEY_D) move[CAMERA_RIGHT]    = true;
             break;
         case APP_KEY_UP:
-            if (e->key == GLFW_KEY_W) move = CAMERA_STILL;
-            else if (e->key == GLFW_KEY_S) move = CAMERA_STILL;
-            else if (e->key == GLFW_KEY_A) move = CAMERA_STILL;
-            else if (e->key == GLFW_KEY_D) move = CAMERA_STILL;
+            if (e->key == GLFW_KEY_W) move[CAMERA_FORWARD]  = false;
+            if (e->key == GLFW_KEY_S) move[CAMERA_BACKWARD] = false;
+            if (e->key == GLFW_KEY_A) move[CAMERA_LEFT]     = false;
+            if (e->key == GLFW_KEY_D) move[CAMERA_RIGHT]    = false;
             break;
         case APP_MOUSE_SCROLL:
             camera_zoom(&cam, e->scroll[1]);
@@ -50,7 +51,8 @@ static void draw()
 
     float now = app_get_time();
     float dt = now - prev;
-    camera_move(&cam, move, dt);
+    for (int i = 0; i < CAMERA_NUM_DIRECTION; ++i)
+        if (move[i]) camera_move(&cam, i, dt);
     prev = now;
 
     mat4 proj, view; /* update MVP */

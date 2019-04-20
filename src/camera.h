@@ -5,11 +5,11 @@
 
 
 enum {
-    CAMERA_STILL,
     CAMERA_FORWARD,
     CAMERA_BACKWARD,
     CAMERA_LEFT,
     CAMERA_RIGHT,
+    CAMERA_NUM_DIRECTION,
 };
 
 struct camera {

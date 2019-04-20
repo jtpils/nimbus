@@ -35,9 +35,6 @@ struct app {
     char* title;
 
     GLFWwindow* hwnd;
-
-    float prev;
-    float now;
 };
 
 
