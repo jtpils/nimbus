@@ -42,6 +42,7 @@ static void app_glfw_key_cb(GLFWwindow* hwnd, int key, int code, int action, int
             e.type = APP_KEY_UP;
             e.key  = key;
             e.mods = mods;
+            break;
         default: break;
     }
     app_event_push(&e);
@@ -54,6 +55,41 @@ static void app_glfw_scroll_cb(GLFWwindow* hwnd, double dx, double dy)
     e.type = APP_MOUSE_SCROLL;
     e.scroll[0] = dx;
     e.scroll[1] = dy;
+    app_event_push(&e);
+}
+
+
+static void app_glfw_cursor_cb(GLFWwindow* hwnd, double x, double y)
+{
+    struct event e;
+    e.type = APP_MOUSE_CURSOR;
+    e.pos[0] = x;
+    e.pos[1] = y;
+    app_event_push(&e);
+}
+
+
+static void app_glfw_mouse_cb(GLFWwindow* hwnd, int btn, int action, int mods)
+{
+    double x, y;
+    glfwGetCursorPos(hwnd, &x, &y);
+
+    struct event e;
+    switch (action) {
+        case GLFW_PRESS:
+            e.type   = APP_MOUSE_DOWN;
+            e.key    = btn;
+            e.pos[0] = x;
+            e.pos[1] = y;
+            break;
+        case GLFW_RELEASE:
+            e.type   = APP_MOUSE_UP;
+            e.key    = btn;
+            e.pos[0] = x;
+            e.pos[1] = y;
+            break;
+        default: break;
+    }
     app_event_push(&e);
 }
 
@@ -76,6 +112,8 @@ static void app_init_glfw(struct app* app)
     glfwSwapInterval(app->swap_interval);
     glfwSetKeyCallback(app->hwnd, app_glfw_key_cb);
     glfwSetScrollCallback(app->hwnd, app_glfw_scroll_cb);
+    glfwSetCursorPosCallback(app->hwnd, app_glfw_cursor_cb);
+    glfwSetMouseButtonCallback(app->hwnd, app_glfw_mouse_cb);
 
     if (gl3wInit()) {
         fprintf(stderr, "[GL3W] initialisation failed\n");

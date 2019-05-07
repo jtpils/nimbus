@@ -26,3 +26,4 @@ void pcd_init(struct pcd* pcd);
 void pcd_free(struct pcd* pcd);
 void pcd_setup_gl(struct pcd* pcd);
 void pcd_draw(struct pcd* pcd);
+void pcd_centroid(struct pcd* pcd, vec3 centroid);

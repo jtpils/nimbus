@@ -119,3 +119,12 @@ void pcd_draw(struct pcd* pcd)
     glw_layout_bind(pcd->lay);
     glw_render(&rnd);
 }
+
+
+void pcd_centroid(struct pcd* pcd, vec3 centroid)
+{
+    glm_vec3_zero(centroid);
+    for (int i = 0; i < pcd->size; ++i)
+        glm_vec3_add(centroid, pcd->data[i].pos, centroid);
+    glm_vec3_divs(centroid, pcd->size, centroid);
+}

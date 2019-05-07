@@ -7,38 +7,38 @@
 struct pcd pcd;
 struct camera cam;
 
+bool  rotate = false;
+vec2  origin;
+vec2  cursor;
 float prev = 0.0f;
-
-bool move[CAMERA_NUM_DIRECTION] = {0};
 
 
 static void init()
 {
     pcd_setup_gl(&pcd);
-    camera_reset(&cam);
+    camera_align(&cam, &pcd);
 }
 
 
 static void input(struct event* e)
 {
     switch (e->type) {
-        case APP_KEY_DOWN:
-            if (e->key == GLFW_KEY_W) move[CAMERA_FORWARD]  = true;
-            if (e->key == GLFW_KEY_S) move[CAMERA_BACKWARD] = true;
-            if (e->key == GLFW_KEY_A) move[CAMERA_LEFT]     = true;
-            if (e->key == GLFW_KEY_D) move[CAMERA_RIGHT]    = true;
-            break;
-        case APP_KEY_UP:
-            if (e->key == GLFW_KEY_W) move[CAMERA_FORWARD]  = false;
-            if (e->key == GLFW_KEY_S) move[CAMERA_BACKWARD] = false;
-            if (e->key == GLFW_KEY_A) move[CAMERA_LEFT]     = false;
-            if (e->key == GLFW_KEY_D) move[CAMERA_RIGHT]    = false;
-            break;
         case APP_MOUSE_SCROLL:
             camera_zoom(&cam, e->scroll[1]);
             break;
-        default:
+        case APP_MOUSE_CURSOR:
+            cursor[0] = e->pos[0];
+            cursor[1] = e->pos[1];
             break;
+        case APP_MOUSE_DOWN:
+            rotate = true;
+            origin[0] = e->pos[0];
+            origin[1] = e->pos[1];
+            break;
+        case APP_MOUSE_UP:
+            rotate = false;
+            break;
+        default: break;
     }
 }
 
@@ -49,16 +49,9 @@ static void draw()
     int mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
     glw_clear(mask, color);
 
-    float now = app_get_time();
-    float dt = now - prev;
-    for (int i = 0; i < CAMERA_NUM_DIRECTION; ++i)
-        if (move[i]) camera_move(&cam, i, dt);
-    prev = now;
-
-    mat4 proj, view; /* update MVP */
-    float fovy = glm_rad(cam.fovy);
-    glm_perspective(fovy, cam.aspect, cam.znear, cam.zfar, proj);
-    glm_look(cam.eye, cam.dir, cam.up, view);
+    mat4 proj, view;
+    camera_proj(&cam, proj);
+    camera_view(&cam, view);
     glm_mat4_mul(proj, view, pcd.mvp);
 
     pcd_draw(&pcd);

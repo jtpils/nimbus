@@ -7,7 +7,9 @@
 enum {
     APP_KEY_DOWN,
     APP_KEY_UP,
+    APP_MOUSE_CURSOR,
     APP_MOUSE_DOWN,
+    APP_MOUSE_UP,
     APP_MOUSE_SCROLL,
 };
 
@@ -16,7 +18,7 @@ struct event {
     int key;
     int mods;
     int mouse;
-    float move[2];
+    float pos[2];
     float scroll[2];
 };
 
@@ -38,5 +40,5 @@ struct app {
 };
 
 
-int app_run(struct app* app);
+int   app_run(struct app* app);
 float app_get_time();
