@@ -7,8 +7,9 @@ void camera_align(struct camera* cam, struct pcd* pcd)
     pcd_centroid(pcd, centroid);
 
     glm_vec3_add(centroid, GLM_ZUP, cam->eye);
-    glm_vec3_copy(centroid, cam->center);
+    glm_vec3_sub(centroid, cam->eye, cam->dir);
     glm_vec3_copy(GLM_YUP, cam->up);
+    glm_vec3_cross(cam->dir, cam->up, cam->right);
 
     cam->fovy = 45.0f;
     cam->aspect = CAMERA_ASPECT_4_3;
@@ -25,9 +26,31 @@ void camera_zoom(struct camera* cam, float factor)
 }
 
 
+void camera_move(struct camera* cam, float speed, int move)
+{
+    vec3 v;
+    switch (move) {
+        case CAMERA_FORWARD:
+            glm_vec3_copy(cam->dir, v);
+            break;
+        case CAMERA_BACKWARD:
+            glm_vec3_negate_to(cam->dir, v);
+            break;
+        case CAMERA_RIGHT:
+            glm_vec3_copy(cam->right, v);
+            break;
+        case CAMERA_LEFT:
+            glm_vec3_negate_to(cam->right, v);
+            break;
+    }
+    glm_vec3_scale(v, speed, v);
+    glm_vec3_add(cam->eye, v, cam->eye);
+}
+
+
 void camera_view(struct camera* cam, mat4 view)
 {
-    glm_lookat(cam->eye, cam->center, cam->up, view);
+    glm_look(cam->eye, cam->dir, cam->up, view);
 }
 
 
