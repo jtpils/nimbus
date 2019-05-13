@@ -3,6 +3,7 @@
 #define GL_SILENCE_DEPRECATION
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+#include "control.h"
 
 
 struct app {

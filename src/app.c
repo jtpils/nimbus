@@ -19,6 +19,21 @@ static void app_key_cb(GLFWwindow* win, int key, int code, int action, int mods)
 }
 
 
+static void app_scroll_cb(GLFWwindow* win, double dx, double dy)
+{
+}
+
+
+static void app_mouse_cb(GLFWwindow* win, int button, int action, int mods)
+{
+}
+
+
+static void app_cursor_cb(GLFWwindow* win, double x, double y)
+{
+}
+
+
 static void app_init_gl(struct app* app)
 {
     if (!glfwInit()) {
@@ -34,6 +49,9 @@ static void app_init_gl(struct app* app)
 
     int width, height;
     glfwSetKeyCallback(app->hwnd, app_key_cb);
+    glfwSetScrollCallback(app->hwnd, app_scroll_cb);
+    glfwSetCursorPosCallback(app->hwnd, app_cursor_cb);
+    glfwSetMouseButtonCallback(app->hwnd, app_mouse_cb);
     glfwSetWindowUserPointer(app->hwnd, app);
     glfwMakeContextCurrent(app->hwnd);
     glfwSwapInterval(app->swap_interval);
@@ -61,18 +79,11 @@ static void app_draw(struct app* app)
 }
 
 
-static void app_flush(struct app* app)
-{
-    glfwPollEvents();
-}
-
-
 int app_run(struct app* app)
 {
     app_init_gl(app);
     while (!app_should_close(app)) {
-        if (app->redraw) app_draw(app);
-        app_flush(app);
+        app_draw(app);
     }
     return 0;
 }

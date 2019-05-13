@@ -1,9 +1,8 @@
 #pragma once
-#include <cglm/cglm.h>
 
 
 struct vertex {
-    vec3 pos;
-    vec3 normal;
-    vec3 color;
+    float pos[3];
+    float normal[3];
+    float color[3];
 };
