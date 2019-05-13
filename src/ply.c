@@ -11,7 +11,7 @@
 struct property {
     char* name;
     int type;
-    int itype;
+    int itype; /* index type */
     int vtype; /* value type */
 };
 
@@ -114,7 +114,7 @@ static struct element* ply_read_header_element(struct ply* pp)
 static struct property* ply_read_header_property(struct ply* pp)
 {
     char* word = NULL;
-    struct element* e  = pp->elements + pp->num_elements - 1;
+    struct element*  e = pp->elements + pp->num_elements - 1;
     struct property* p = e->properties + e->num_properties;
     word = strtok(NULL, " \n");
     p->type = string_to_enum(word, types);
