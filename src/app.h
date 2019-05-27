@@ -3,19 +3,21 @@
 #define GL_SILENCE_DEPRECATION
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include "control.h"
 
+
+struct event {
+    int type;
+};
 
 struct app {
-    float aspect;
     int width;
     int height;
-    int swap_interval;
     char* title;
-    bool high_dpi;
-    bool fullscreen;
-    bool redraw;
-    GLFWwindow* hwnd;
+
+    void (*init_cb)(void);
+    void (*draw_cb)(void);
+    void (*close_cb)(void);
+    void (*event_cb)(struct event*);
 };
 
 
