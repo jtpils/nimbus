@@ -5,10 +5,6 @@
 #include <GLFW/glfw3.h>
 
 
-struct event {
-    int type;
-};
-
 struct app {
     int width;
     int height;
@@ -17,7 +13,6 @@ struct app {
     void (*init_cb)(void);
     void (*draw_cb)(void);
     void (*close_cb)(void);
-    void (*event_cb)(struct event*);
 };
 
 

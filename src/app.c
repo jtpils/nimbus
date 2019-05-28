@@ -1,18 +1,25 @@
 #include "app.h"
 #include <stdio.h>
 
-#define APP_STACK_SIZE 16
 
+enum {
+    MOUSE_LEFT,
+    MOUSE_RIGHT,
+    MOUSE_MIDDLE,
+    MOUSE_BUTTONS
+};
 
 struct state {
     int top;
     int width;
     int height;
-    float aspect;
+    int draw_calls;
+    double aspect;
+    double origin[2];
+    double cursor[2];
     bool redraw;
+    bool mouse[MOUSE_BUTTONS];
     GLFWwindow* hwnd;
-
-    struct event events[APP_STACK_SIZE];
 };
 
 static struct state state = {0};
@@ -22,6 +29,7 @@ static void app_resize_cb(GLFWwindow* win, int width, int height)
 {
     state.width = width;
     state.height = height;
+    state.aspect = (float)width / (float)height;
     state.redraw = true;
 }
 
@@ -38,11 +46,32 @@ static void app_scroll_cb(GLFWwindow* win, double dx, double dy)
 
 static void app_mouse_cb(GLFWwindow* win, int button, int action, int mods)
 {
+    double x, y;
+    glfwGetCursorPos(win, &x, &y);
+
+    switch (action) {
+        case GLFW_PRESS:
+            state.origin[0] = x;
+            state.origin[1] = y;
+            state.mouse[button] = true;
+            break;
+        case GLFW_RELEASE:
+            state.cursor[0] = x;
+            state.cursor[1] = y;
+            state.mouse[button] = false;
+            break;
+    }
+    state.redraw = true;
 }
 
 
 static void app_cursor_cb(GLFWwindow* win, double x, double y)
 {
+    state.cursor[0] = x;
+    state.cursor[1] = y;
+
+    if (state.mouse[MOUSE_LEFT]) state.redraw = true; /* rotating with left mouse */
+    if (state.mouse[MOUSE_MIDDLE]) state.redraw = true;
 }
 
 
@@ -63,6 +92,7 @@ static void app_init_gl(struct app* app)
     glfwSetScrollCallback(state.hwnd, app_scroll_cb);
     glfwSetCursorPosCallback(state.hwnd, app_cursor_cb);
     glfwSetMouseButtonCallback(state.hwnd, app_mouse_cb);
+    glfwSetFramebufferSizeCallback(state.hwnd, app_resize_cb);
 
     int width, height;
     glfwMakeContextCurrent(state.hwnd);
@@ -79,7 +109,7 @@ static void app_init_gl(struct app* app)
 }
 
 
-static void app_handle_events(struct app* app)
+static void app_poll_events(struct app* app)
 {
     glfwPollEvents();
 }
@@ -94,9 +124,10 @@ static bool app_should_close(struct app* app)
 static void app_draw(struct app* app)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-
     glfwSwapBuffers(state.hwnd);
+
     state.redraw = false;
+    state.draw_calls++;
 }
 
 
@@ -106,7 +137,7 @@ int app_run(struct app* app)
     if (app->init_cb) app->init_cb();
 
     while (!app_should_close(app)) {
-        app_handle_events(app);
+        app_poll_events(app);
         if (!state.redraw) continue;
         if (app->draw_cb) app->draw_cb();
         app_draw(app);
