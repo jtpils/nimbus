@@ -1,5 +1,8 @@
 #include "app.h"
 #include <stdio.h>
+#include "render.h"
+
+#define APP_STACK_SIZE 32
 
 
 enum {
@@ -20,6 +23,8 @@ struct state {
     bool redraw;
     bool mouse[MOUSE_BUTTONS];
     GLFWwindow* hwnd;
+    struct model models[APP_STACK_SIZE];
+    struct render renders[APP_STACK_SIZE];
 };
 
 static struct state state = {0};
@@ -27,7 +32,7 @@ static struct state state = {0};
 
 static void app_resize_cb(GLFWwindow* win, int width, int height)
 {
-    state.width = width;
+    state.width  = width;
     state.height = height;
     state.aspect = (float)width / (float)height;
     state.redraw = true;
@@ -69,8 +74,8 @@ static void app_cursor_cb(GLFWwindow* win, double x, double y)
 {
     state.cursor[0] = x;
     state.cursor[1] = y;
-
-    if (state.mouse[MOUSE_LEFT]) state.redraw = true; /* rotating with left mouse */
+    /* rotating with left mouse */
+    if (state.mouse[MOUSE_LEFT]) state.redraw = true;
     if (state.mouse[MOUSE_MIDDLE]) state.redraw = true;
 }
 
@@ -131,18 +136,29 @@ static void app_draw(struct app* app)
 }
 
 
+void app_model_push(struct app* app, struct model* mod)
+{
+    if (state.top == APP_STACK_SIZE) {
+        fprintf(stderr, "[nimbus] maximum stack size reached.\n");
+        return;
+    }
+    /* initilize a new renderer and push the model into the stack */
+    struct render* rnd = &state.renders[state.top];
+    render_init(rnd, mod);
+    state.models[state.top] = (*mod);
+    state.top++;
+}
+
+
 int app_run(struct app* app)
 {
     app_init_gl(app);
-    if (app->init_cb) app->init_cb();
 
     while (!app_should_close(app)) {
         app_poll_events(app);
         if (!state.redraw) continue;
-        if (app->draw_cb) app->draw_cb();
         app_draw(app);
     }
 
-    if (app->close_cb) app->close_cb();
     return 0;
 }

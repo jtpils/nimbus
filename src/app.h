@@ -3,17 +3,15 @@
 #define GL_SILENCE_DEPRECATION
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+#include "model.h"
 
 
 struct app {
     int width;
     int height;
     char* title;
-
-    void (*init_cb)(void);
-    void (*draw_cb)(void);
-    void (*close_cb)(void);
 };
 
-
-int app_run(struct app* app);
+int  app_run(struct app* app);
+void app_model_push(struct app* app, struct model* mod);
+void app_model_pop(struct app* app);
