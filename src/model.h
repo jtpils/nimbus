@@ -1,12 +1,10 @@
 #pragma once
-#include <cglm/cglm.h>
+#include "mesh.h"
 
 
 struct model {
-    int   size;
-    vec3* points;
-    vec3* normals;
-    vec3* colors;
+    unsigned int vao;
 };
 
-void model_load(struct model* mod, const char* fname);
+void model_new(struct model* mod, struct mesh* msh);
+void model_del(struct model* mod);

@@ -12,9 +12,9 @@ int main(int argc, char* argv[])
     };
 
     if (argc > 1) {
-        struct model mod;
-        model_load(&mod, argv[1]);
-        app_model_push(&app, &mod);
+        struct mesh msh = {0};
+        mesh_load(&msh, argv[1]);
+        app_model_push(&app, &msh);
     }
 
     return app_run(&app);

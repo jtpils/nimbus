@@ -1,6 +1,6 @@
 #include "app.h"
 #include <stdio.h>
-#include "render.h"
+#include "model.h"
 
 #define APP_STACK_SIZE 32
 
@@ -24,7 +24,6 @@ struct state {
     bool mouse[MOUSE_BUTTONS];
     GLFWwindow* hwnd;
     struct model models[APP_STACK_SIZE];
-    struct render renders[APP_STACK_SIZE];
 };
 
 static struct state state = {0};
@@ -136,17 +135,15 @@ static void app_draw(struct app* app)
 }
 
 
-void app_model_push(struct app* app, struct model* mod)
+void app_model_push(struct app* app, struct mesh* msh)
 {
     if (state.top == APP_STACK_SIZE) {
         fprintf(stderr, "[nimbus] maximum stack size reached.\n");
         return;
     }
-    /* initilize a new renderer and push the model into the stack */
-    struct render* rnd = &state.renders[state.top];
-    render_init(rnd, mod);
-    state.models[state.top] = (*mod);
-    state.top++;
+
+    struct model* mod = &state.models[state.top++];
+    model_new(mod, msh);
 }
 
 
