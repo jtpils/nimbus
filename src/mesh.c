@@ -35,7 +35,7 @@ void mesh_load(struct mesh* msh, const char* fname)
 
     int vc = ply_element_count(pp, "vertex");
     int fc = ply_element_count(pp, "face");
-    mesh_alloc(msh, vc, fc);
+    mesh_init(msh, vc, fc);
 
     ply_set_read_cb(pp, "vertex", vertex_cb, msh);
     ply_set_read_cb(pp, "face", face_cb, msh);
@@ -46,10 +46,10 @@ void mesh_load(struct mesh* msh, const char* fname)
 }
 
 
-void mesh_alloc(struct mesh* msh, int vc, int fc)
+void mesh_init(struct mesh* msh, int vc, int fc)
 {
     msh->vc = vc;
     msh->fc = fc;
-    msh->vertices = realloc(msh->vertices, sizeof(struct vertex) * vc);
-    msh->faces = realloc(msh->faces, sizeof(ivec3) * fc);
+    msh->vertices = malloc(sizeof(struct vertex) * vc);
+    msh->faces = malloc(sizeof(ivec3) * fc);
 }
