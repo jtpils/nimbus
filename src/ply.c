@@ -300,16 +300,16 @@ static double ply_read_scalar_binary(struct ply* pp, int type)
 }
 
 
-static double ply_read_property(struct ply* pp, struct element* e, struct property* p)
+static double ply_read_property(struct ply* pp, struct element* e, struct property* p, int type)
 {
     double v = NAN;
     switch (pp->format) {
         case PLY_ASCII:
-            v = ply_read_scalar_ascii(pp, p->type);
+            v = ply_read_scalar_ascii(pp, type);
             break;
         case PLY_BIG_ENDIAN:
         case PLY_LITTLE_ENDIAN:
-            v = ply_read_scalar_binary(pp, p->type);
+            v = ply_read_scalar_binary(pp, type);
             break;
     }
     return v;
@@ -321,8 +321,16 @@ static void ply_read_element(struct ply* pp, struct element* e)
     for (int i = 0; i < e->count; ++i) {
         for (int k = 0; k < e->num_properties; ++k) {
             struct property* p = e->properties + k;
-            double v = ply_read_property(pp, e, p);
-            e->read_cb(v, p->name, i, e->data);
+            if (p->type != PLY_LIST) {
+                double v = ply_read_property(pp, e, p, p->type);
+                if (e->read_cb) e->read_cb(v, p->name, i, 1, 0, e->data);
+            } else {
+                int len = ply_read_property(pp, e, p, p->itype);
+                for (int iv = 0; iv < len; ++iv) {
+                    double v = ply_read_property(pp, e, p, p->vtype);
+                    if (e->read_cb) e->read_cb(v, p->name, i, len, iv, e->data);
+                }
+            }
         }
     }
 }
@@ -332,6 +340,6 @@ void ply_read(struct ply* pp)
 {
     for (int i = 0; i < pp->num_elements; ++i) {
         struct element* e = pp->elements + i;
-        if (e->read_cb) ply_read_element(pp, e);
+        ply_read_element(pp, e);
     }
 }

@@ -31,7 +31,7 @@ enum {
 
 struct ply;
 
-typedef void (ply_read_cb)(double, const char*, int, void*);
+typedef void (ply_read_cb)(double, const char*, int, int, int, void*);
 
 struct ply* ply_init();
 void ply_free(struct ply* pp);

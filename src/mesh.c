@@ -4,7 +4,7 @@
 #include "ply.h"
 
 
-static void vertex_cb(double v, const char* name, int i, void* data)
+static void vertex_cb(double v, const char* name, int i, int len, int iv, void* data)
 {
     struct mesh* msh = (struct mesh*)(data);
     if (!strcmp(name, "x")) msh->vertices[i].pos[0] = v;
@@ -19,6 +19,13 @@ static void vertex_cb(double v, const char* name, int i, void* data)
 }
 
 
+static void face_cb(double v, const char* name, int i, int len, int iv, void* data)
+{
+    struct mesh* msh = (struct mesh*)(data);
+    msh->faces[i][iv] = (int)v;
+}
+
+
 void mesh_load(struct mesh* msh, const char* fname)
 {
     FILE* fp = fopen(fname, "rb");
@@ -26,11 +33,12 @@ void mesh_load(struct mesh* msh, const char* fname)
     ply_init_io(pp, fp);
     ply_read_header(pp);
 
-    int V = ply_element_count(pp, "vertex");
-    int F = ply_element_count(pp, "face");
-    mesh_alloc(msh, V, F);
+    int vc = ply_element_count(pp, "vertex");
+    int fc = ply_element_count(pp, "face");
+    mesh_alloc(msh, vc, fc);
 
     ply_set_read_cb(pp, "vertex", vertex_cb, msh);
+    ply_set_read_cb(pp, "face", face_cb, msh);
     ply_read(pp);
 
     ply_free(pp);
@@ -38,9 +46,10 @@ void mesh_load(struct mesh* msh, const char* fname)
 }
 
 
-void mesh_alloc(struct mesh* msh, int V, int F)
+void mesh_alloc(struct mesh* msh, int vc, int fc)
 {
-    msh->V = V;
-    msh->F = F;
-    msh->vertices = realloc(msh->vertices, sizeof(struct vertex) * V);
+    msh->vc = vc;
+    msh->fc = fc;
+    msh->vertices = realloc(msh->vertices, sizeof(struct vertex) * vc);
+    msh->faces = realloc(msh->faces, sizeof(ivec3) * fc);
 }
