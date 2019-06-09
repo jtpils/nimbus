@@ -2,7 +2,9 @@
 
 
 enum {
-    GL_FLOAT2,
+    GL_VEC2,
+    GL_VEC3,
+    GL_VEC4,
     GL_MAT4,
 };
 

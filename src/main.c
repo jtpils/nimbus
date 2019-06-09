@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
         .title = "nimbus",
     };
     app_init(&app);
-
     app_model_push(&app, &msh);
+
     return app_run(&app);
 }

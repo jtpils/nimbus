@@ -4,22 +4,24 @@
 #include <GL/gl3w.h>
 
 
+static const char* vs =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 pos;\n"
+    "uniform mat4 mvp;\n"
+    "void main() {\n"
+    "    gl_Position = mvp * vec4(pos, 1.0);\n"
+    "}\n";
+
+static const char* fs =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main() {\n"
+    "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
+    "}\n";
+
+
 unsigned int shader_init()
 {
-    const char* vs =
-        "#version 330 core\n"
-        "layout (location = 0) in vec3 pos;\n"
-        "uniform mat4 mvp;\n"
-        "void main() {\n"
-        "    gl_Position = mvp * vec4(pos, 1.0);\n"
-        "}\n";
-    const char* fs =
-        "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main() {\n"
-        "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
-        "}\n";
-
     unsigned int vert = glCreateShader(GL_VERTEX_SHADER);
     unsigned int frag = glCreateShader(GL_FRAGMENT_SHADER);
     unsigned int prog = glCreateProgram();
@@ -35,6 +37,11 @@ unsigned int shader_init()
     glDeleteShader(frag);
 
     return prog;
+}
+
+
+void shader_free(unsigned int shd)
+{
 }
 
 

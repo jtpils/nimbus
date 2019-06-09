@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include "model.h"
 #include "shader.h"
+#include "camera.h"
 
 #define APP_STACK_SIZE 32
 
@@ -17,36 +18,28 @@ enum {
 };
 
 struct state {
-    int top;
-    int width;
-    int height;
+    GLFWwindow* hwnd;
+    int size;
     int draw_calls;
-    unsigned int shader;
-    unsigned int models[APP_STACK_SIZE];
-    vec3 eye;
-    vec3 front;
-    vec3 up;
-    vec3 right;
-    double fovy;
-    double aspect;
-    double znear;
-    double zfar;
     double origin[2];
     double cursor[2];
+    unsigned int shader;
+    unsigned int models[APP_STACK_SIZE];
+    struct mesh* meshes[APP_STACK_SIZE];
     bool redraw;
     bool mouse[MOUSE_BUTTONS];
-    GLFWwindow* hwnd;
-    struct mesh* meshes[APP_STACK_SIZE];
 };
 
+
 static struct state state = {0};
+static struct camera cam = {0};
 
 
 static void app_resize_cb(GLFWwindow* win, int width, int height)
 {
-    state.width  = width;
-    state.height = height;
-    state.aspect = (float)width / (float)height;
+    cam.width  = width;
+    cam.height = height;
+    cam.aspect = (float)width / (float)height;
     state.redraw = true;
 }
 
@@ -109,8 +102,8 @@ static void app_draw(struct app* app)
     glClear(GL_COLOR_BUFFER_BIT);
 
     mat4 view, proj, mvp;
-    glm_perspective(glm_rad(state.fovy), state.aspect, state.znear, state.zfar, proj);
-    glm_look(state.eye, state.front, state.up, view);
+    glm_perspective(glm_rad(cam.fovy), cam.aspect, cam.znear, cam.zfar, proj);
+    glm_look(cam.eye, cam.front, cam.up, view);
     glm_mat4_mul(proj, view, mvp);
 
     struct uniform argv[] = {
@@ -119,14 +112,14 @@ static void app_draw(struct app* app)
     shader_bind(state.shader);
     shader_args(state.shader, 1, argv);
 
-    for (int i = 0; i < state.top; ++i) {
+    for (int i = 0; i < state.size; ++i) {
         struct mesh* msh = state.meshes[i];
         unsigned int mod = state.models[i];
         model_draw(mod, GL_POINTS, 0, msh->vc);
     };
 
-    state.redraw = false;
     state.draw_calls++;
+    state.redraw = false;
     glfwSwapBuffers(state.hwnd);
 }
 
@@ -162,29 +155,20 @@ void app_init(struct app* app)
     printf("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     app_resize_cb(state.hwnd, width, height);
-
-    glm_vec3_zero(state.eye);
-    glm_vec3_negate_to(GLM_ZUP, state.front);
-    glm_cross(state.front, GLM_YUP, state.right);
-    glm_cross(state.right, state.front, state.up);
-
-    state.eye[2] = 1.0f;
-    state.fovy = 45.0f;
-    state.znear = 0.001f;
-    state.zfar = 100.0f;
     state.shader = shader_init();
+    camera_reset(&cam);
 }
 
 
 void app_model_push(struct app* app, struct mesh* msh)
 {
-    if (state.top == APP_STACK_SIZE) {
+    if (state.size == APP_STACK_SIZE) {
         fprintf(stderr, "[nimbus] maximum stack size reached.\n");
         return;
     }
-    state.meshes[state.top] = msh;
-    state.models[state.top] = model_init(msh);
-    state.top++;
+    state.meshes[state.size] = msh;
+    state.models[state.size] = model_init(msh);
+    state.size++;
 }
 
 
