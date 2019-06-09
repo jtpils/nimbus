@@ -18,11 +18,11 @@ enum {
 };
 
 struct state {
-    GLFWwindow* hwnd;
     int size;
     int draw_calls;
     double origin[2];
     double cursor[2];
+    GLFWwindow* hwnd;
     unsigned int shader;
     unsigned int models[APP_STACK_SIZE];
     struct mesh* meshes[APP_STACK_SIZE];
@@ -114,8 +114,8 @@ static void app_draw(struct app* app)
 
     for (int i = 0; i < state.size; ++i) {
         struct mesh* msh = state.meshes[i];
-        unsigned int mod = state.models[i];
-        model_draw(mod, GL_POINTS, 0, msh->vc);
+        unsigned int mdl = state.models[i];
+        model_draw(mdl, GL_POINTS, 0, msh->vc);
     };
 
     state.draw_calls++;
