@@ -3,9 +3,10 @@
 #define GL_SILENCE_DEPRECATION
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+
 #include "model.h"
-#include "shader.h"
 #include "camera.h"
+#include "shader.h"
 
 #define APP_STACK_SIZE 32
 
@@ -100,10 +101,11 @@ static bool app_should_close(struct app* app)
 static void app_draw(struct app* app)
 {
     glClear(GL_COLOR_BUFFER_BIT);
+    camera_update(&cam);
 
     mat4 view, proj, mvp;
     glm_perspective(glm_rad(cam.fovy), cam.aspect, cam.znear, cam.zfar, proj);
-    glm_look(cam.eye, cam.front, cam.up, view);
+    glm_lookat(cam.eye, cam.center, cam.up, view);
     glm_mat4_mul(proj, view, mvp);
 
     struct uniform argv[] = {
@@ -169,6 +171,7 @@ void app_model_push(struct app* app, struct mesh* msh)
     state.meshes[state.size] = msh;
     state.models[state.size] = model_init(msh);
     state.size++;
+    mesh_bbox(msh, cam.bbox);
 }
 
 

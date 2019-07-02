@@ -19,3 +19,4 @@ struct mesh {
 void mesh_load(struct mesh* msh, const char* fname);
 void mesh_init(struct mesh* msh, int vc, int fc);
 void mesh_free(struct mesh* msh);
+void mesh_bbox(struct mesh* msh, vec3 bbox[2]);

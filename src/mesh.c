@@ -53,3 +53,14 @@ void mesh_init(struct mesh* msh, int vc, int fc)
     msh->vertices = malloc(sizeof(struct vertex) * vc);
     msh->faces = malloc(sizeof(ivec3) * fc);
 }
+
+
+void mesh_bbox(struct mesh* msh, vec3 bbox[2])
+{
+    glm_aabb_invalidate(bbox);
+    for (int i = 0; i < msh->vc; ++i) {
+        struct vertex* v = msh->vertices + i;
+        glm_vec3_minv(v->pos, bbox[0], bbox[0]);
+        glm_vec3_maxv(v->pos, bbox[1], bbox[1]);
+    }
+}
